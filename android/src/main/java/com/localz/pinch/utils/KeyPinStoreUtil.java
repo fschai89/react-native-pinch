@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 
 public class KeyPinStoreUtil {
@@ -51,12 +52,10 @@ public class KeyPinStoreUtil {
             keyStore.setCertificateEntry(filename, ca);
         }
 
-        // Create a TrustManager that trusts the CAs in our KeyStore
-        String tmfAlgorithm = TrustManagerFactory.getDefaultAlgorithm();
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(tmfAlgorithm);
-        tmf.init(keyStore);
+         // Use custom trust manager to trusts the CAs in our KeyStore
+        TrustManager[] trustManagers = {new CustomTrustManager(keyStore)};
 
-        sslContext.init(null, tmf.getTrustManagers(), null);
+        sslContext.init(null, trustManagers, null);
     }
 
     public SSLContext getContext() {
